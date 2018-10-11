@@ -41,28 +41,6 @@ def main():
         except KeyError as ex:
             raise MissingEnvironmentVariable(ex.args[0])
 
-        client = HttpClient(args)
-        response = client.get('https://api.shippable.com/jobs?runIds=%s' % run_id)
-        jobs = response.json()
-
-        if not isinstance(jobs, list):
-            raise ApplicationError(json.dumps(jobs, indent=4, sort_keys=True))
-
-        if len(jobs) == 1:
-            raise ApplicationError('Shippable run %s has only one job. Did you use the "Rebuild with SSH" option?' % run_id)
-    except ApplicationWarning as ex:
-        display.warning(str(ex))
-        exit(0)
-    except ApplicationError as ex:
-        display.error(str(ex))
-        exit(1)
-    except KeyboardInterrupt:
-        exit(2)
-    except IOError as ex:
-        if ex.errno == errno.EPIPE:
-            exit(3)
-        raise
-
 
 def parse_args():
     """Parse command line arguments."""
